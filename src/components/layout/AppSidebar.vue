@@ -1,14 +1,28 @@
 <template>
-  <aside class="w-72 bg-[#111C44] text-white flex flex-col h-screen overflow-y-auto shrink-0 select-none border-r border-navy-950/20">
+  <aside
+    class="w-72 bg-[#111C44] text-white flex flex-col h-screen overflow-y-auto shrink-0 select-none border-r border-navy-950/20 fixed inset-y-0 left-0 z-50 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300 ease-in-out"
+    :class="{ 'translate-x-0': isSidebarOpen }"
+  >
     <!-- Brand / Title -->
-    <div class="px-7 py-6 flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-primary-600/30">
-        A
+    <div class="px-7 py-6 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center font-extrabold text-white text-lg shadow-lg shadow-primary-600/30">
+          A
+        </div>
+        <div>
+          <h1 class="text-base font-extrabold tracking-widest text-white leading-none">ALADDIN</h1>
+          <p class="text-xxs text-slate-400 font-semibold tracking-wider uppercase mt-1">CRM SYSTEM - V2.4</p>
+        </div>
       </div>
-      <div>
-        <h1 class="text-base font-extrabold tracking-widest text-white leading-none">ALADDIN</h1>
-        <p class="text-xxs text-slate-400 font-semibold tracking-wider uppercase mt-1">CRM SYSTEM - V2.4</p>
-      </div>
+      
+      <!-- Close button on mobile -->
+      <button
+        type="button"
+        class="lg:hidden p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-navy-800 transition"
+        @click="closeSidebar"
+      >
+        <X class="h-5 w-5" />
+      </button>
     </div>
 
     <!-- User Profile Card -->
@@ -24,7 +38,7 @@
     </div>
 
     <!-- Menu List -->
-    <nav class="flex-1 px-4 py-6 scrollbar-thin">
+    <nav class="flex-1 px-4 py-6 scrollbar-thin" @click="closeSidebar">
       <!-- OVERVIEW GROUP -->
       <div class="mb-6">
         <p class="text-xxs font-extrabold text-slate-500 tracking-widest uppercase px-4 mb-2.5">Tổng quan</p>
@@ -87,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import {
   LayoutDashboard,
   CalendarRange,
@@ -101,7 +115,8 @@ import {
   Moon,
   Sun,
   HelpCircle,
-  LogOut
+  LogOut,
+  X
 } from 'lucide-vue-next'
 import SidebarItem from './SidebarItem.vue'
 import BaseAvatar from '../base/BaseAvatar.vue'
@@ -109,6 +124,9 @@ import { useStudentStore } from '../../stores/student.store'
 
 const studentStore = useStudentStore()
 const isDark = ref(false)
+
+const isSidebarOpen = inject('isSidebarOpen')
+const closeSidebar = inject('closeSidebar')
 </script>
 
 <style scoped>

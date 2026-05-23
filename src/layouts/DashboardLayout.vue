@@ -1,10 +1,17 @@
 <template>
-  <div class="flex h-screen w-screen overflow-hidden bg-[#F4F7FE]">
+  <div class="flex h-screen w-screen overflow-hidden bg-[#F4F7FE] relative">
+    <!-- Overlay backdrop for mobile when sidebar is open -->
+    <div
+      v-if="isSidebarOpen"
+      class="fixed inset-0 bg-navy-950/40 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300"
+      @click="isSidebarOpen = false"
+    ></div>
+
     <!-- Left Sidebar -->
     <AppSidebar />
 
     <!-- Right Panel Wrapper -->
-    <div class="flex-1 flex flex-col h-full overflow-hidden">
+    <div class="flex-1 flex flex-col h-full overflow-hidden min-w-0">
       <!-- Top Header -->
       <AppHeader />
 
@@ -24,9 +31,20 @@
 </template>
 
 <script setup>
+import { ref, provide } from 'vue'
 import AppSidebar from '../components/layout/AppSidebar.vue'
 import AppHeader from '../components/layout/AppHeader.vue'
 import BaseToast from '../components/base/BaseToast.vue'
+
+const isSidebarOpen = ref(false)
+
+provide('isSidebarOpen', isSidebarOpen)
+provide('toggleSidebar', () => {
+  isSidebarOpen.value = !isSidebarOpen.value
+})
+provide('closeSidebar', () => {
+  isSidebarOpen.value = false
+})
 </script>
 
 <style scoped>
