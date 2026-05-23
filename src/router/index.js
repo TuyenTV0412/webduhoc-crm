@@ -6,10 +6,9 @@ const routes = [
   {
     path: '/',
     component: DashboardLayout,
-    redirect: '/students',
     children: [
       {
-        path: 'students',
+        path: '',
         name: 'students',
         component: StudentsView,
         meta: { title: 'Quản lý học viên' }

@@ -49,7 +49,7 @@
       <!-- MANAGEMENT GROUP -->
       <div class="mb-6">
         <p class="text-xxs font-extrabold text-slate-500 tracking-widest uppercase px-4 mb-2.5">Quản lý</p>
-        <SidebarItem to="/students" label="Học viên" :icon="Users" :badge="studentStore.students.length" />
+        <SidebarItem to="/" label="Học viên" :icon="Users" :badge="studentStore.students.length" />
         <SidebarItem to="/orders" label="Đơn hàng Nhật Bản" :icon="Briefcase" />
         <SidebarItem to="/progress" label="Tiến trình hồ sơ" :icon="FileText" />
         <SidebarItem to="/tuition" label="Học phí & Chi phí" :icon="CreditCard" badge="5" />
