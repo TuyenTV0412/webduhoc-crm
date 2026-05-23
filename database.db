@@ -1,0 +1,239 @@
+-- =========================
+-- DROP OLD TABLES (OPTIONAL)
+-- =========================
+
+drop table if exists students cascade;
+drop table if exists student_statuses cascade;
+drop table if exists orders cascade;
+drop table if exists japanese_levels cascade;
+
+
+-- =========================
+-- STUDENT STATUSES
+-- =========================
+
+create table student_statuses (
+    id bigint generated always as identity primary key,
+    name text not null,
+    code text not null unique,
+    color text,
+    sort_order int default 0,
+    created_at timestamptz default now()
+);
+
+insert into student_statuses (
+    name,
+    code,
+    color,
+    sort_order
+)
+values
+('Mới đăng ký', 'NEW', '#94A3B8', 1),
+('Đang học', 'STUDYING', '#3B82F6', 2),
+('Chờ phỏng vấn', 'WAITING_INTERVIEW', '#F59E0B', 3),
+('Đã trúng tuyển', 'PASSED', '#22C55E', 4),
+('Đã xuất cảnh', 'DEPARTED', '#8B5CF6', 5);
+
+
+-- =========================
+-- ORDERS (ĐƠN HÀNG / NGÀNH)
+-- =========================
+
+create table orders (
+    id bigint generated always as identity primary key,
+    name text not null,
+    country text default 'Japan',
+    description text,
+    is_active boolean default true,
+    created_at timestamptz default now()
+);
+
+insert into orders (
+    name,
+    country
+)
+values
+('Kỹ thuật CNC', 'Japan'),
+('Chăm sóc người cao tuổi', 'Japan'),
+('Hàn công nghiệp', 'Japan'),
+('Chế biến thực phẩm', 'Japan'),
+('Điện tử', 'Japan'),
+('Dệt may', 'Japan'),
+('Xây dựng', 'Japan'),
+('Nông nghiệp', 'Japan');
+
+
+-- =========================
+-- JAPANESE LEVELS
+-- =========================
+
+create table japanese_levels (
+    id bigint generated always as identity primary key,
+    level text not null unique,
+    rank int not null,
+    created_at timestamptz default now()
+);
+
+insert into japanese_levels (
+    level,
+    rank
+)
+values
+('N5', 1),
+('N4', 2),
+('N3', 3),
+('N2', 4),
+('N1', 5);
+
+
+-- =========================
+-- STUDENTS
+-- =========================
+
+create table students (
+    id bigint generated always as identity primary key,
+
+    student_code text not null unique,
+    full_name text not null,
+
+    gender text not null
+        check (gender in ('male', 'female')),
+
+    phone text,
+
+    avatar_url text,
+
+    order_id bigint
+        references orders(id)
+        on delete set null,
+
+    status_id bigint
+        references student_statuses(id)
+        on delete set null,
+
+    japanese_level_id bigint
+        references japanese_levels(id)
+        on delete set null,
+
+    departure_date date,
+
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
+
+-- =========================
+-- SEED STUDENTS
+-- =========================
+
+insert into students (
+    student_code,
+    full_name,
+    gender,
+    phone,
+    order_id,
+    status_id,
+    japanese_level_id,
+    departure_date
+)
+values
+(
+    'HV-2025-001',
+    'Nguyễn Văn An',
+    'male',
+    '0912.345.678',
+    1,
+    2,
+    2,
+    null
+),
+(
+    'HV-2025-002',
+    'Trần Thị Bình',
+    'female',
+    '0987.654.321',
+    2,
+    3,
+    3,
+    null
+),
+(
+    'HV-2025-003',
+    'Lê Văn Cường',
+    'male',
+    '0901.234.567',
+    3,
+    4,
+    3,
+    '2025-08-15'
+),
+(
+    'HV-2025-004',
+    'Phạm Thị Dung',
+    'female',
+    '0934.567.890',
+    4,
+    5,
+    4,
+    '2025-03-01'
+),
+(
+    'HV-2025-005',
+    'Hoàng Văn Em',
+    'male',
+    '0923.456.789',
+    5,
+    2,
+    2,
+    null
+),
+(
+    'HV-2025-006',
+    'Vũ Thị Phương',
+    'female',
+    '0956.789.012',
+    6,
+    1,
+    1,
+    null
+),
+(
+    'HV-2025-007',
+    'Đỗ Văn Giang',
+    'male',
+    '0945.678.901',
+    7,
+    3,
+    3,
+    null
+),
+(
+    'HV-2025-008',
+    'Ngô Thị Hằng',
+    'female',
+    '0967.890.123',
+    8,
+    2,
+    2,
+    null
+);
+
+
+-- =========================
+-- AUTO UPDATE updated_at
+-- =========================
+
+create or replace function update_updated_at_column()
+returns trigger
+language plpgsql
+as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$;
+
+create trigger trg_students_updated_at
+before update on students
+for each row
+execute function update_updated_at_column();
